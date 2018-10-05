@@ -52,7 +52,7 @@ Spring提供了ApplicationContext接口的几个实现。在独立应用程序�
 
 想了解更多关于在Spring容器使用其他形式配置元数据的方式，可以参考如下内容：
 
-* **基于注解的配置：**从Spring2.5引入了对基于注解配置元数据的支持
+* **基于注解的配置：** 从Spring2.5引入了对基于注解配置元数据的支持
 * **基于Java的配置：** 从Spring 3.0开始，Spring JavaConfig项目提供的许多功能都成为Spring核心框架的一部分。因此，你可以使用Java在应用程序类的外部定义bean，而不使用XML文件。要使用这些新功能，请参阅[@Configuration](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Configuration.html)，[@Bean](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html)，[@Import](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Import.html)和[@DependsOn](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/DependsOn.html)注解。
 
 Spring配置包含至少一个由容器管理的Bean定义，并且通常不止一个。基于XML方式配置元数据，通常使用<bean/>来定义一个Bean，而<bean/>节点位于顶级<beans/>节点内。基于Java方式的配置，通常使用在@Configuration注解的类中的@Bean注解方法中。<br/>
@@ -96,7 +96,7 @@ ApplicationContext context = new ClassPathXmlApplicationContext("services.xml", 
 ```
 注意：在了解了Spring的IoC容器之后，你可能想要了解有关Spring的资源抽象的更多信息（如[参考资料](http://www.isharefy.com/)中所述），它提供了一种从URI语法中定义的位置读取InputStream的便捷机制。特别是，资源路径用于构建应用程序上下文，如[应用程序上下文和资源路径](http://www.isharefy.com/)中所述。<br/>
 
-以下示例显示了服务层对象**（services.xml）**的配置文件：
+以下示例显示了服务层对象 **（services.xml）** 的配置文件：
 
 ```
 <?xml version="1.0" encoding="UTF-8"?>
@@ -118,7 +118,7 @@ ApplicationContext context = new ClassPathXmlApplicationContext("services.xml", 
 </beans>
 ```
 
-以下示例显示了数据访问对象**（daos.xml）**文件：
+以下示例显示了数据访问对象 **（daos.xml）** 文件：
 
 ```
 <?xml version="1.0" encoding="UTF-8"?>
