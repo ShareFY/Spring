@@ -237,16 +237,127 @@ context.refresh();
 然后，您可以使用getBean来获取Bean的实例。ApplicationContext接口有一些其他方法可以获取Beans，但理想情况下，您的应用程序代码永远不应该使用它们。实际上，您的应用程序代码根本不应该调用getBean()方法，因此根本不用依赖于Spring APIs。例如，Spring与Web框架的集成为各种Web框架组件（如控制器和JSF托管bean）提供依赖注入，允许您通过元数据（例如自动装配注释）声明对特定bean的依赖性。
 
 
+### 1、3 Bean概述
+Spring IoC容器管理一个或多个Beans,这些Beans是通过您提供给容器的配置元数据创建的（例如，用XML的<bean/>格式定义的）。<br/>
 
+在容器内部，这些bean定义表示为BeanDefinition对象，其中包含（以及其他信息）以下元数据：
 
+```
+* 包限定类名:通常是定义的bean的实际实现类。
+* Bean行为配置元素，它说明bean在容器中的行为方式（范围，生命周期回调等）
+* 引用bean执行其工作时所需的其他bean，这些引用也称为协作者或依赖项
+* 要在新创建的对象中设置的其他配置设置 - 例如，连接池的大小限制或在管理连接池的Bean中使用的连接数。
 
+```
 
+这些元数据转换为组成每个bean定义的一组属性。下表描述了这些属性：
 
+*表1. bean定义*
+<table>
+  <tr>
+    <th width=20%, bgcolor=yellow>参数</th>
+    <th width=30%, bgcolor=yellow>详细解释</th>
+  </tr>
+  <tr>
+    <td> Class </td>
+    <td> 实例化Beans </td>
+  </tr>
+  <tr>
+    <td> Name </td>
+    <td> 命名Beans </td>
+  </tr>
+  <tr>
+    <td> Scope </td>
+    <td> Beans范围 </td>
+  </tr>
+  <tr>
+    <td> Constructor arguments </td>
+    <td> 依赖注入 </td>
+  </tr>
+  <tr>
+    <td> Properties </td>
+    <td> 依赖注入 </td>
+  </tr>
+  <tr>
+    <td> Autowiring mode </td>
+    <td> 自动化装配 </td>
+  </tr>
+  <tr>
+    <td> Lazy initialization mode </td>
+    <td> 懒加载Beans </td>
+  </tr>
+  <tr>
+    <td> Initialization method </td>
+    <td> 回调函数初始化 </td>
+  </tr>
+  <tr>
+    <td> Destruction method </td>
+    <td> 回调函数的销毁 </td>
+  </tr>
+</table>
 
+除了Bean定义包含有关如何创建特定bean的信息之外，ApplicationContext的实现也允许注册在容器外部（由用户）创建的现有对象。这是通过getBeanFactory()方法访问ApplicationContext的BeanFactory来完成的，该方法返回BeanFactory DefaultListableBeanFactory的实现。DefaultListableBeanFactory通过registerSingleton(..)和registerBeanDefinition(..)方法来支持此注册。但是，典型应用程序仅适用于通过元数据bean的定义来定义bean对象。
 
+```
+注意：需要尽早注册Bean元数据和手动提供的单例实例，以便容器在自动装配和其他内省步骤期间正确推断它们。 虽然在某种程度上支持覆盖现有元数据和现有单例实例，但是在运行时注册新bean（与对工厂的实时访问同时进行）并未得到官方支持，并且可能导致并发访问异常、bean容器中的状态不一致，或者两者都有。
+```
 
+#### 1、3、1 命名Beans
+每个bean都有一个或多个标识符，这些标识符在承载bean的容器中必须是唯一的。bean通常只有一个标识符，但是，如果它需要多个，则额外的可以被视为别名。<br/>
 
+在基于XML的配置元数据中，您可以使用id属性、name属性或两个属性一起使用来指定bean标识符。id属性允许您指定一个id，通常，这些名称是字母数字（'myBean'，'someService'等），但它们也可以包含特殊字符。如果要为bean引入其他别名，还可以在name属性中指定它们，使用逗号(,)，分号(;)或空格分隔。在历史记录中，在Spring 3.1之前的版本中，id属性被定义为xsd:ID类型，它约束了可能的字符。从3.1开始，它被定义为xsd:string类型。 请注意，bean的id唯一性仍然由容器强制执行，但不再由XML解析器强制执行了。<br/>
 
+您不需要为bean指定名称或ID标识，如果没有明确指定名称或id标识，则容器会为该Bean生成一个唯一的名称。但是，如果要通过名称引用该bean，通过使用ref元素或Service Locator样式查找，则必须提供名称。不提供名称的动机与使用内部beans和自动装配协作者有关。<br/>
+
+```
+Bean命名约定：
+	惯例是在命名bean时使用标准Java约定来实例字段名称。也就是说，bean名称以小写字母开头，并且遵从驼峰命名规则。此类名称的示例包括accountManager，accountService，userDao，loginController等。
+	一致的bean命名规则可以使您的配置更容易阅读和理解。另外，如果您使用Spring AOP，将建议方式应用于名称相关的一组bean时，它会有很大帮助。
+```
+
+```
+注意：通过类路径中的组件扫描，Spring按照前面描述的规则为未命名的组件生成bean名称：基本上，采用简单的类名并将其初始字符转换为小写。但是，在（不常见的）特殊情况下，当有多个字符并且第一个和第二个字符都是大写字母时，原始情况将被保留。这些规则与java.beans.Introspector.decapitalize（Spring在此处使用）中定义的规则相同。
+```
+
+**在Bean定义之外的Bean别名** <br/>
+
+在bean定义本身中，您可以为bean提供多个名称，方法是使用id属性指定的最多一个名称和name属性中的任意数量的其他名称。这些名称可以是同一个bean的等效别名，并且在某些情况下非常有用，例如让应用程序中的每个组件通过使用特定于该组件本身的bean名称来引用公共依赖项。<br/>
+
+但是，指定实际定义的bean的所有别名并不总是足够的。有时需要为其他地方定义的bean引入别名。在大型系统中通常就是这种情况，其中配置在每个子系统之间分配，每个子系统具有其自己的一组对象定义。在基于XML的配置元数据中，您可以使用<alias/>元素来完成此任务。 以下示例显示了如何执行此操作：
+
+```
+<alias name="fromName" alias="toName"/>
+```
+
+在这种情况下，在使用此别名定义之后，名为fromName的bean（在同一容器中）也可以称为toName。<br/>
+
+例如，子系统A的配置元数据可以通过subsystemA-dataSource的名称来引用DataSource。子系统B的配置元数据可以通过subsystemB-dataSource的名称来引用DataSource。在编写使用这两个子系统的主应用程序时，主应用程序通过myApp-dataSource的名称引用DataSource。 要使所有三个名称引用同一对象，可以将以下别名定义添加到配置元数据中：
+
+```
+<alias name="subsystemA-dataSource" alias="subsystemB-dataSource"/>
+<alias name="subsystemA-dataSource" alias="myApp-dataSource" />
+```
+
+现在，每个组件和主应用程序都可以通过一个唯一的名称引用dataSource，并保证不与任何其他定义冲突（有效地创建命名空间），但它们引用相同的bean。<br/>
+
+Java配置:<br/>
+如果使用Java配置，则@Bean注解可用于提供别名。有关详细信息，请参阅[使用@Bean注解](http://www.isharefy.com)。
+
+#### 1、3、2 实例化Beans
+bean定义本质上是用于创建一个或多个对象的。容器在被询问时查看命名bean的配方，并使用由该bean定义封装的配置元数据来创建（或获取）实际对象。<br/>
+
+如果使用基于XML的配置元数据，则指定要在<bean />元素的class属性中实例化的对象的类型（或类）。 此类属性（在内部，是BeanDefinition实例上的Class属性）通常是必需的。 （有关例外，请参阅使用实例工厂方法和Bean定义继承进行实例化。）您可以使用以下两种方法之一来使用Class属性：
+
+* 通常，在容器本身通过反向调用其构造函数直接创建bean的情况下指定要构造的bean类，基本等同于使用new运算符的Java代码。
+* 要指定包含为创建对象而调用的静态工厂方法的实际类，在不太常见的情况下，容器在类上调用静态工厂方法来创建bean。从静态工厂方法的调用返回的对象类型可以完全是同一个类或另一个类。
+
+```
+内部类名
+如果要为静态嵌套类配置bean定义，则必须使用嵌套类的二进制名称。
+例如，如果在com.example包中有一个名为SomeThing的类，并且此SomeThing类具有一个名为OtherThing的静态嵌套类，则bean定义上的class属性值将为com.example.SomeThing$OtherThing。
+请注意，在名称中使用$字符可以将嵌套类名与外部类名分开。
+
+```
 
 
 
