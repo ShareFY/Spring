@@ -194,10 +194,47 @@ beans {
 
 此配置样式在很大程度上等同于XML bean定义，甚至支持Spring的XML配置命名空间。它还允许通过importBeans指令导入XML bean定义文件。
 
+#### 1、2、3 使用容器
+ApplicationContext是高级工厂的接口，能够维护不同Beans对象的注册以及他们之间的依赖关系。通过使用方法 T getBean(String name, Class<T> requiredType)，您可以获取到Beans的实例。<br/>
 
+您可以使用ApplicationContext来获取beans的定义并访问它们，如以下示例所示：
 
+```
+// 创建并配置beans
+ApplicationContext context = new ClassPathXmlApplicationContext("services.xml", "daos.xml");
 
+// 获取配置实例
+PetStoreService service = context.getBean("petStore", PetStoreService.class);
 
+// 使用配置实例
+List<String> userList = service.getUsernameList();
+```
+
+使用Groovy配置，bootstrapping看起来非常相似。它有一个不同的上下文实现类Groovy-aware（但也能识别XML bean的定义）。以下示例显示了Groovy配置：
+
+```
+ApplicationContext context = new GenericGroovyApplicationContext("services.groovy", "daos.groovy");
+```
+
+最灵活的变体是GenericApplicationContext与reader delegates相结合 - 例如，使用XML文件的XmlBeanDefinitionReader，如以下示例所示：
+
+```
+GenericApplicationContext context = new GenericApplicationContext();
+new XmlBeanDefinitionReader(context).loadBeanDefinitions("services.xml", "daos.xml");
+context.refresh();
+```
+
+您还可以将GroovyBeanDefinitionReader用于Groovy，如以下示例所示：
+
+```
+GenericApplicationContext context = new GenericApplicationContext();
+new GroovyBeanDefinitionReader(context).loadBeanDefinitions("services.groovy", "daos.groovy");
+context.refresh();
+```
+
+您可以在同一个ApplicationContext中混合和匹配这些reader delegates，从不同的配置源中读取bean的定义。<br/>
+
+然后，您可以使用getBean来获取Bean的实例。ApplicationContext接口有一些其他方法可以获取Beans，但理想情况下，您的应用程序代码永远不应该使用它们。实际上，您的应用程序代码根本不应该调用getBean()方法，因此根本不用依赖于Spring APIs。例如，Spring与Web框架的集成为各种Web框架组件（如控制器和JSF托管bean）提供依赖注入，允许您通过元数据（例如自动装配注释）声明对特定bean的依赖性。
 
 
 
