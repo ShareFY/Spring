@@ -21,20 +21,20 @@ Spring框架文档（版本：5.1.0）-- 核心技术
         -   [1、2、1 配置元数据](#配置元数据)
         -   [1、2、2 实例化容器](#实例化容器)
         -   [1、2、3 使用容器](#使用容器)
-    -   <a href="#beanOverview">1、3 Bean概述</a>
-        -   [1、3、1 命名Beans](#命名beans)
+    -   [1、3 Bean概述](#beanOverview)
+        -   [1、3、1 命名Beans](#命名beans) 
         -   [1、3、2 实例化Beans](#实例化beans)
     -   [1、4 依赖关系](#依赖关系)
     	 -   [1、4、1 依赖注入](#依赖注入)   
 
 
-<span id="ioc容器"></span>
+<a id="ioc容器"></a>
 1、IoC容器
 ----------
 
 本章介绍Spring的反转控制(IoC)容器。<br/>
 
-<span id="spring-ioc容器和beans介绍"></span>
+<a id="spring-ioc容器和beans介绍"></a>
 ### 1、1 Spring IoC容器和Beans介绍
 
 本章介绍了控制反转(IoC)原理的Spring框架实现。(参见
@@ -59,7 +59,7 @@ IoC容器管理的对象称为bean。Bean是一个由Spring
 IoC容器实例化，组装和管理的对象。 否则，bean只是应用程序中众多对象之一。
 Bean及其之间的依赖关系反映在容器使用的配置元数据中。
 
-<span id="容器概述"></span>
+<a id="容器概述"></a>
 ### 1、2 容器概述
 
 org.springframework.context.ApplicationContext接口表示Spring
@@ -77,7 +77,7 @@ Suite（基于Eclipse的开发环境），只需点击几下鼠标或按键即�
 ![The Spring IoC
 container](https://raw.githubusercontent.com/ShareFY/Spring/master/images/The%20Spring%20IoC%20container.png)
 
-<span id="配置元数据"></span>
+<a id="配置元数据"></a>
 #### 1、2、1 配置元数据
 
 如上面的图所示，Spring容器使用一组配置元数据，这些配置元数据代表了作为应用开发者的你告诉Spring容器如何去进行初始化、配置和装配那些在你应用程序中用到的对象。<br/>
@@ -128,7 +128,7 @@ Spring](http://www.isharefy.com/)。<br/>
 
 id属性的值引用协作对象。本例中没有显示引用协作对象的XML。有关更多信息，请参见[依赖关系](http://www.isharefy.com/)。
 
-<span id="实例化容器"></span>
+<a id="实例化容器"></a>
 #### 1、2、2 实例化容器
 
 提供给ApplicationContext构造函数的定位路径实际上是用来提供给容器加载配置元数据的资源字符串，它允许容器从各种外部资源（如本地文件系统，Java
@@ -237,7 +237,7 @@ Bean定义DSL中表示，如我们所知道的Grails框架。通常，此类配�
 bean定义，甚至支持Spring的XML配置命名空间。它还允许通过importBeans指令导入XML
 bean定义文件。
 
-<span id="使用容器"></span>
+<a id="使用容器"></a>
 #### 1、2、3 使用容器
 
 ApplicationContext是高级工厂的接口，能够维护不同Beans对象的注册以及他们之间的依赖关系。通过使用方法
@@ -384,7 +384,7 @@ DefaultListableBeanFactory的实现。DefaultListableBeanFactory通过registerSi
     虽然在某种程度上支持覆盖现有元数据和现有单例实例，但是在运行时注册新bean（与对工厂的实时访问同时进行）并未得到官方支持，
     并且可能导致并发访问异常、bean容器中的状态不一致，或者两者都有。
 
-<span id="命名beans"></span>
+<a id="命名beans"></a>
 #### 1、3、1 命名Beans
 
 每个bean都有一个或多个标识符，这些标识符在承载bean的容器中必须是唯一的。bean通常只有一个标识符，但是，如果它需要多个，则额外的可以被视为别名。<br/>
@@ -428,7 +428,7 @@ Locator样式查找，则必须提供名称。不提供名称的动机与使用�
 Java配置:<br/>
 如果使用Java配置，则\@Bean注解可用于提供别名。有关详细信息，请参阅[使用@Bean注解](http://www.isharefy.com)。
 
-<span id="实例化beans"></span>
+<a id="实例化beans"></a>
 #### 1、3、2 实例化Beans
 
 bean定义本质上是用于创建一个或多个对象的。容器在被询问时查看命名bean的配方，并使用由该bean定义封装的配置元数据来创建（或获取）实际对象。<br/>
@@ -556,11 +556,11 @@ public class DefaultServiceLocator {
 相比之下，FactoryBean（注意大小写）是指Spring特定的FactoryBean。
 ```
 
-<span id="依赖关系"></span>
+<a id="依赖关系"></a>
 ### 1、4 依赖关系
 典型的企业应用程序不包含单个对象（或Spring用法中的bean）。即使是最简单的应用程序也有一些对象可以协同工作，以呈现给最终用户所看到的连贯应用程序。下一节将解释如何从定义独立的许多bean定义过渡到一个完全实现的应用程序，在这个应用程序中，对象协作以实现目标。
 
-<span id="依赖注入"></span>
+<a id="依赖注入"></a>
 #### 1、4、1 依赖注入
 依赖注入（DI）是一个过程，在这个过程中，对象只能通过构造函数参数、工厂方法的参数或在构造对象实例后在对象实例上设置的属性来定义它们的依赖关系（即，它们使用的其他对象）、从工厂方法返回。然后容器在创建bean时注入这些依赖项。这个过程本质上是bean本身的反向（因此称为控制反转），它通过使用类的直接构造或服务定位器模式来控制其依赖项的实例化或位置。<br/>
 
@@ -568,7 +568,7 @@ public class DefaultServiceLocator {
 
 DI存在两个主要变体：[基于构造函数的依赖注入](#基于构造函数的依赖注入)和[基于Setter的依赖注入]()。<br/>
 
-<span id="基于构造函数的依赖注入"></span>
+<a id="基于构造函数的依赖注入"></a>
 **基于构造函数的依赖注入** <br/>
 基于构造函数的DI由容器调用具有多个参数的构造函数来完成，每个参数表示一个依赖项。调用具有特定参数的静态工厂方法来构造bean几乎是等效的，本讨论同样处理构造函数和静态工厂方法的参数。以下示例显示了一个只能使用构造函数注入进行依赖注入的类：
 
@@ -589,7 +589,7 @@ public class SimpleMovieLister {
 
 请注意，这个类没有什么特别之处。它是一个POJO，它不依赖于容器特定的接口、基类或注释。
 
-<span id="构造函数参数解析"></span>
+<a id="构造函数参数解析"></a>
 **构造函数参数解析** <br/>
 使用参数的类型进行构造函数参数解析匹配。如果bean定义的构造函数参数中不存在潜在的歧义，那么在bean定义中定义构造函数参数的顺序是在实例化bean时将这些参数提供给适当的构造函数的顺序。考虑以下类：
 
