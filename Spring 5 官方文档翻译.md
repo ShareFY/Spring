@@ -85,7 +85,8 @@ container](https://raw.githubusercontent.com/ShareFY/Spring/master/images/The%20
 传统上，配置元数据以简单直观的XML格式提供，本章大部分内容使用该种方式来介绍Spring
 IoC容器的关键概念和功能。<br/>
 
-    注意：基于XML的元数据配置不是唯一被允许的配置形式。Spring IoC容器本身与配置元数据的方式完全分离。目前，许多开发人员为其Spring应用程序选择基于Java的配置。
+    注意：基于XML的元数据配置不是唯一被允许的配置形式。Spring IoC容器本身与配置元数据的方式完全分离。
+    目前，许多开发人员为其Spring应用程序选择基于Java的配置。
 
 想了解更多关于在Spring容器使用其他形式配置元数据的方式，可以参考如下内容：
 
@@ -201,8 +202,12 @@ Schema，正在导入的文件的内容（包括顶层<beans/>元素）必须是
 bean定义。
 
     注意：
-        可以（但不推荐）使用相对“../”路径引用父目录中的文件。这样做会对当前应用程序之外的文件创建依赖关系。特别是，不建议对classpath使用此引用：URL（例如，classpath：../ services.xml），其中运行时解析过程选择“最近的”类路径根，然后查看其父目录。类路径配置更改可能导致选择不同的，不正确的目录。
-        你始终可以使用完全限定的资源位置而不是相对路径：例如，file：C：/config/services.xml或classpath：/config/services.xml。但是，请注意您将应用程序的配置与特定的绝对位置耦合。通常最好为这样的绝对位置保持间接联系 - 例如，通过在运行时针对JVM系统属性解析的“${...}”占位符。
+        可以（但不推荐）使用相对“../”路径引用父目录中的文件。这样做会对当前应用程序之外的文件创建依赖关系。
+        特别是，不建议对classpath使用此引用：URL（例如，classpath：../ services.xml），
+        其中运行时解析过程选择“最近的”类路径根，然后查看其父目录。
+        类路径配置更改可能导致选择不同的，不正确的目录。
+        你始终可以使用完全限定的资源位置而不是相对路径：例如，file：C：/config/services.xml或classpath：/config/services.xml。
+        但是，请注意您将应用程序的配置与特定的绝对位置耦合。通常最好为这样的绝对位置保持间接联系 - 例如，通过在运行时针对JVM系统属性解析的“${...}”占位符。
 
 命名空间本身提供了导入指令功能。在Spring提供的XML名称空间(例如context和util命名空间)中，除了普通bean定义之外，还有其他配置特性。<br/>
 
@@ -375,7 +380,9 @@ Destruction method
 除了Bean定义包含有关如何创建特定bean的信息之外，ApplicationContext的实现也允许注册在容器外部（由用户）创建的现有对象。这是通过getBeanFactory()方法访问ApplicationContext的BeanFactory来完成的，该方法返回BeanFactory
 DefaultListableBeanFactory的实现。DefaultListableBeanFactory通过registerSingleton(..)和registerBeanDefinition(..)方法来支持此注册。但是，典型应用程序仅适用于通过元数据bean的定义来定义bean对象。
 
-    注意：需要尽早注册Bean元数据和手动提供的单例实例，以便容器在自动装配和其他内省步骤期间正确推断它们。 虽然在某种程度上支持覆盖现有元数据和现有单例实例，但是在运行时注册新bean（与对工厂的实时访问同时进行）并未得到官方支持，并且可能导致并发访问异常、bean容器中的状态不一致，或者两者都有。
+    注意：需要尽早注册Bean元数据和手动提供的单例实例，以便容器在自动装配和其他内省步骤期间正确推断它们。 
+    虽然在某种程度上支持覆盖现有元数据和现有单例实例，但是在运行时注册新bean（与对工厂的实时访问同时进行）并未得到官方支持，
+    并且可能导致并发访问异常、bean容器中的状态不一致，或者两者都有。
 
 <span id="命名beans"></span>
 #### 1、3、1 命名Beans
@@ -390,10 +397,14 @@ DefaultListableBeanFactory的实现。DefaultListableBeanFactory通过registerSi
 Locator样式查找，则必须提供名称。不提供名称的动机与使用内部beans和自动装配协作者有关。<br/>
 
     Bean命名约定：
-        惯例是在命名bean时使用标准Java约定来实例字段名称。也就是说，bean名称以小写字母开头，并且遵从驼峰命名规则。此类名称的示例包括accountManager，accountService，userDao，loginController等。
-        一致的bean命名规则可以使您的配置更容易阅读和理解。另外，如果您使用Spring AOP，将建议方式应用于名称相关的一组bean时，它会有很大帮助。
+        惯例是在命名bean时使用标准Java约定来实例字段名称。也就是说，bean名称以小写字母开头，并且遵从驼峰命名规则。
+        此类名称的示例包括accountManager，accountService，userDao，loginController等。
+        一致的bean命名规则可以使您的配置更容易阅读和理解。
+        另外，如果您使用Spring AOP，将建议方式应用于名称相关的一组bean时，它会有很大帮助。
 
-    注意：通过类路径中的组件扫描，Spring按照前面描述的规则为未命名的组件生成bean名称：基本上，采用简单的类名并将其初始字符转换为小写。但是，在（不常见的）特殊情况下，当有多个字符并且第一个和第二个字符都是大写字母时，原始情况将被保留。这些规则与java.beans.Introspector.decapitalize（Spring在此处使用）中定义的规则相同。
+    注意：通过类路径中的组件扫描，Spring按照前面描述的规则为未命名的组件生成bean名称：基本上，采用简单的类名并将其初始字符转换为小写。
+    但是，在（不常见的）特殊情况下，当有多个字符并且第一个和第二个字符都是大写字母时，原始情况将被保留。
+    这些规则与java.beans.Introspector.decapitalize（Spring在此处使用）中定义的规则相同。
 
 **在Bean定义之外的Bean别名** <br/>
 
@@ -432,7 +443,8 @@ bean定义本质上是用于创建一个或多个对象的。容器在被询问�
 <!-- -->
     内部类名
     如果要为静态嵌套类配置bean定义，则必须使用嵌套类的二进制名称。
-    例如，如果在com.example包中有一个名为SomeThing的类，并且此SomeThing类具有一个名为OtherThing的静态嵌套类，则bean定义上的class属性值将为com.example.SomeThing$OtherThing。
+    例如，如果在com.example包中有一个名为SomeThing的类，并且此SomeThing类具有一个名为OtherThing的静态嵌套类，
+    	则bean定义上的class属性值将为com.example.SomeThing$OtherThing。
     请注意，在名称中使用$字符可以将嵌套类名与外部类名分开。
 
 
@@ -540,7 +552,8 @@ public class DefaultServiceLocator {
 这种方法表明可以通过依赖注入（DI）来管理和配置工厂bean本身。请参阅[Dependencies and Configuration in Detail](http://www.isharefy.com)。
 
 ```
-在Spring文档中，“factory bean”是指在Spring容器中配置并通过实例或静态工厂方法创建对象的bean。相比之下，FactoryBean（注意大小写）是指Spring特定的FactoryBean。
+在Spring文档中，“factory bean”是指在Spring容器中配置并通过实例或静态工厂方法创建对象的bean。
+相比之下，FactoryBean（注意大小写）是指Spring特定的FactoryBean。
 ```
 
 <span id="依赖关系"></span>
