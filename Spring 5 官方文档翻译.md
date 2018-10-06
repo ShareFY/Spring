@@ -279,7 +279,7 @@ delegates，从不同的配置源中读取bean的定义。<br/>
 然后，您可以使用getBean来获取Bean的实例。ApplicationContext接口有一些其他方法可以获取Beans，但理想情况下，您的应用程序代码永远不应该使用它们。实际上，您的应用程序代码根本不应该调用getBean()方法，因此根本不用依赖于Spring
 APIs。例如，Spring与Web框架的集成为各种Web框架组件（如控制器和JSF托管bean）提供依赖注入，允许您通过元数据（例如自动装配注释）声明对特定bean的依赖性。
 
-<span id="beanOverview"></span>
+<a id="beanOverview"></a>
 ### 1、3 Bean概述
 
 Spring
