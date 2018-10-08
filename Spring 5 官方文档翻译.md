@@ -25,7 +25,8 @@ Spring框架文档（版本：5.1.0）-- 核心技术
         -   [1、3、1 命名Beans](#命名beans) 
         -   [1、3、2 实例化Beans](#实例化beans)
     -   [1、4 依赖关系](#依赖关系)
-    	 -   [1、4、1 依赖注入](#依赖注入)   
+    	 -   [1、4、1 依赖注入](#依赖注入) 
+    	 -   [1、4、2 依赖关系和配置的详细介绍](#依赖关系和配置的详细介绍)  
 
 
 <a id="ioc容器"></a>
@@ -886,27 +887,93 @@ public class ExampleBean {
 
 静态工厂方法的参数由<constructor-arg/>元素提供，与实际使用的构造函数完全相同。工厂方法返回的类的类型不必与包含静态工厂方法的类相同（尽管在本例中是这样的）。实例（非静态）工厂方法可以以基本相同的方式使用（除了使用factory-bean属性而不是class属性），因此我们不在这里讨论这些细节。
 
+<a id="依赖关系和配置的详细介绍"></a>
+#### 1、4、2 依赖关系和配置的详细介绍
+如[上一节](#依赖注入)所述，您可以将bean属性和构造函数参数定义作为其他被管理的bean（协作者）的引用或者作为内联定义的值。Spring基于XML配置元数据支持在<property/>和<constructor-arg/>元素中使用子元素类型。
 
+**直接数值（原始数值、字符串等）** <br/>
+<property/>元素的value属性将属性或构造函数参数指定为人类可读的字符串形式。Spring的[转换服务](http://www.isharefy.com)被用于将这些值从字符串转换为属性或参数的实际类型。下面的例子显示了要设置的各种值：
 
+```
+<bean id="myDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <!-- results in a setDriverClassName(String) call -->
+    <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+    <property name="url" value="jdbc:mysql://localhost:3306/mydb"/>
+    <property name="username" value="root"/>
+    <property name="password" value="masterkaoli"/>
+</bean>
+```
 
+以下示例使用[p命名空间](http://www.isharefy.com)进行更简洁的XML配置：
 
+```
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <bean id="myDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+        destroy-method="close"
+        p:driverClassName="com.mysql.jdbc.Driver"
+        p:url="jdbc:mysql://localhost:3306/mydb"
+        p:username="root"
+        p:password="masterkaoli"/>
 
+</beans>
+```
 
+前面的XML更简洁。但是，除非您在创建bean定义时使用支持自动补全属性的IDE（例如[IntelliJ IDEA](https://www.jetbrains.com/idea/)或[Spring Tool Suite](https://spring.io/tools3/sts)），否则会在运行时而不是设计时发现拼写错误。强烈建议使用此类IDE的提示功能。<br/>
 
+您还可以配置一个java.util.Properties实例，如下所示：
 
+```
+<bean id="mappings"
+    class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 
+    <!-- typed as a java.util.Properties -->
+    <property name="properties">
+        <value>
+            jdbc.driver.className=com.mysql.jdbc.Driver
+            jdbc.url=jdbc:mysql://localhost:3306/mydb
+        </value>
+    </property>
+</bean>
+```
 
+Spring容器通过使用JavaBeans的PropertyEditor机制将<value/>元素内的文本转换为java.util.Properties实例。这是一个很好的快捷方式，并且是Spring团队支持在value属性样式上使用嵌套<value/>元素的少数几个地方之一。<br/>
 
+*idref元素* <br/>
+idref元素只是一种防错控制的方法，可以将容器中另一个bean的id（字符串值 - 而不是引用）传递给<constructor-arg/>或<property/>元素。以下示例显示了如何使用它：
 
+```
+<bean id="theTargetBean" class="..."/>
 
+<bean id="theClientBean" class="...">
+    <property name="targetName">
+        <idref bean="theTargetBean"/>
+    </property>
+</bean>
+```
 
+前面bean定义的代码段与以下代码段完全等效（在运行时）：
 
+```
+<bean id="theTargetBean" class="..." />
 
+<bean id="client" class="...">
+    <property name="targetName" value="theTargetBean"/>
+</bean>
+```
 
+第一种形式优于第二种形式，第一种形式使用的idref标记允许容器在部署时验证引用的、指定的bean确实存在。在第二种形式中，不对传递给client bean的targetName属性的值进行验证，当客户端bean实际被实例化时，才会发现错误（最可能是致命的结果）。如果client bean是一个标准的bean，则只能在部署容器后很长时间才能发现此错误和产生的异常。
 
+```
+注意：在4.0的beans XSD中不再支持idref元素的local属性，因为它不再提供常规bean引用的值。
+升级到4.0架构时，将现有的idref local引用更改为idref bean。
+```
 
-
+<idref/>元素带来值的一个常见位置（至少在Spring 2.0之前的版本中）是在ProxyFactoryBean bean定义中的[AOP拦截器](https://docs.spring.io/spring/docs/5.1.0.RELEASE/spring-framework-reference/core.html#aop-pfb-1)的配置中。指定拦截器名称时使用<idref/>元素可以防止对拦截器ID的拼写错误。
 
 
 
