@@ -95,7 +95,7 @@ IoC容器的关键概念和功能。<br/>
 -   **基于Java的配置：** 从Spring 3.0开始，Spring
     JavaConfig项目提供的许多功能都成为Spring核心框架的一部分。因此，你可以使用Java在应用程序类的外部定义bean，而不使用XML文件。要使用这些新功能，请参阅[@Configuration](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Configuration.html)，[@Bean](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html)，[@Import](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Import.html)和[@DependsOn](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/DependsOn.html)注解。
 
-Spring配置包含至少一个由容器管理的Bean定义，并且通常不止一个。基于XML方式配置元数据，通常使用<bean/>来定义一个Bean，而<bean/>节点位于顶级<beans/>节点内。基于Java方式的配置，通常使用在\@Configuration注解的类中的@Bean注解方法中。<br/>
+Spring配置包含至少一个由容器管理的Bean定义，并且通常不止一个。基于XML方式配置元数据，通常使用```<bean/>```来定义一个Bean，而```<bean/>```节点位于顶级```<beans/>```节点内。基于Java方式的配置，通常使用在@Configuration注解的类中的@Bean注解方法中。<br/>
 
 这些bean定义对应于构成应用程序的实际对象。通常，定义服务层对象、数据访问对象（DAOs）、表现层对象（如Struts
 Action实例），基础结构对象（如Hibernate
@@ -185,7 +185,7 @@ CLASSPATH等）加载配置元数据。
 **编写基于XML方式配置元数据**<br/>
 通过多个XML文件来进行Bean的定义通常较为有用。通常，每个单独的XML配置文件都代表你架构中的一个逻辑层或模块。<br/>
 
-你可以使用应用程序上下文构造函数从所有这些XML片段加载bean定义。如前面章节所述，此构造函数接受多个资源定位符。或者，使用一个或多个<import/>元素来从另一个或多个文件加载bean定义。以下示例显示了如何执行此操作：
+你可以使用应用程序上下文构造函数从所有这些XML片段加载bean定义。如前面章节所述，此构造函数接受多个资源定位符。或者，使用一个或多个```<import/>```元素来从另一个或多个文件加载bean定义。以下示例显示了如何执行此操作：
 
     <beans>
         <import resource="services.xml"/>
@@ -199,7 +199,7 @@ CLASSPATH等）加载配置元数据。
 在前面的示例中，外部bean定义从三个文件加载：services.xml，messageSource.xml和themeSource.xml。
 所有位置路径都与执行导入的定义文件相关，因此services.xml必须与执行导入的文件位于相同的目录或类路径位置，而messageSource.xml和themeSource.xml必须位于该位置下的资源位置
 导入文件。如你所见，最前边的斜杠被忽略了。但是，鉴于这些路径是相对的，最好不要使用斜杠。根据Spring
-Schema，正在导入的文件的内容（包括顶层<beans/>元素）必须是有效的XML
+Schema，正在导入的文件的内容（包括顶层```<beans/>```元素）必须是有效的XML
 bean定义。
 
     注意：
@@ -284,7 +284,7 @@ APIs。例如，Spring与Web框架的集成为各种Web框架组件（如控制�
 ### 1、3 Bean概述
 
 Spring
-IoC容器管理一个或多个Beans,这些Beans是通过您提供给容器的配置元数据创建的（例如，用XML的<bean/>格式定义的）。<br/>
+IoC容器管理一个或多个Beans,这些Beans是通过您提供给容器的配置元数据创建的（例如，用XML的```<bean/>```格式定义的）。<br/>
 
 在容器内部，这些bean定义表示为BeanDefinition对象，其中包含（以及其他信息）以下元数据：
 
@@ -411,7 +411,7 @@ Locator样式查找，则必须提供名称。不提供名称的动机与使用�
 
 在bean定义本身中，您可以为bean提供多个名称，方法是使用id属性指定的最多一个名称和name属性中的任意数量的其他名称。这些名称可以是同一个bean的等效别名，并且在某些情况下非常有用，例如让应用程序中的每个组件通过使用特定于该组件本身的bean名称来引用公共依赖项。<br/>
 
-但是，指定实际定义的bean的所有别名并不总是足够的。有时需要为其他地方定义的bean引入别名。在大型系统中通常就是这种情况，其中配置在每个子系统之间分配，每个子系统具有其自己的一组对象定义。在基于XML的配置元数据中，您可以使用<alias/>元素来完成此任务。
+但是，指定实际定义的bean的所有别名并不总是足够的。有时需要为其他地方定义的bean引入别名。在大型系统中通常就是这种情况，其中配置在每个子系统之间分配，每个子系统具有其自己的一组对象定义。在基于XML的配置元数据中，您可以使用```<alias/>```元素来完成此任务。
 以下示例显示了如何执行此操作：
 
     <alias name="fromName" alias="toName"/>
@@ -434,7 +434,7 @@ Java配置:<br/>
 
 bean定义本质上是用于创建一个或多个对象的。容器在被询问时查看命名bean的配方，并使用由该bean定义封装的配置元数据来创建（或获取）实际对象。<br/>
 
-如果使用基于XML的配置元数据，则指定要在<bean />元素的class属性中实例化的对象的类型（或类）。
+如果使用基于XML的配置元数据，则指定要在```<bean />```元素的class属性中实例化的对象的类型（或类）。
 此类属性（在内部，是BeanDefinition实例上的Class属性）通常是必需的。
 （有关例外，请参阅使用实例工厂方法和Bean定义继承进行实例化。）您可以使用以下两种方法之一来使用Class属性：
 
@@ -605,7 +605,7 @@ public class ThingOne {
 }
 ```
 
-假设ThingTwo和ThingThree类与继承无关，则不存在潜在的歧义。因此，以下配置工作正常，您无需在<constructor-arg/>元素中显式指定构造函数参数索引或类型。
+假设ThingTwo和ThingThree类与继承无关，则不存在潜在的歧义。因此，以下配置工作正常，您无需在```<constructor-arg/>```元素中显式指定构造函数参数索引或类型。
 
 ```
 <beans>
@@ -885,14 +885,14 @@ public class ExampleBean {
 }
 ```
 
-静态工厂方法的参数由<constructor-arg/>元素提供，与实际使用的构造函数完全相同。工厂方法返回的类的类型不必与包含静态工厂方法的类相同（尽管在本例中是这样的）。实例（非静态）工厂方法可以以基本相同的方式使用（除了使用factory-bean属性而不是class属性），因此我们不在这里讨论这些细节。
+静态工厂方法的参数由```<constructor-arg/>```元素提供，与实际使用的构造函数完全相同。工厂方法返回的类的类型不必与包含静态工厂方法的类相同（尽管在本例中是这样的）。实例（非静态）工厂方法可以以基本相同的方式使用（除了使用factory-bean属性而不是class属性），因此我们不在这里讨论这些细节。
 
 <a id="依赖关系和配置的详细介绍"></a>
 #### 1、4、2 依赖关系和配置的详细介绍
-如[上一节](#依赖注入)所述，您可以将bean属性和构造函数参数定义作为其他被管理的bean（协作者）的引用或者作为内联定义的值。Spring基于XML配置元数据支持在<property/>和<constructor-arg/>元素中使用子元素类型。
+如[上一节](#依赖注入)所述，您可以将bean属性和构造函数参数定义作为其他被管理的bean（协作者）的引用或者作为内联定义的值。Spring基于XML配置元数据支持在```<property/>```和```<constructor-arg/>```元素中使用子元素类型。
 
 **直接数值（原始数值、字符串等）** <br/>
-<property/>元素的value属性将属性或构造函数参数指定为人类可读的字符串形式。Spring的[转换服务](http://www.isharefy.com)被用于将这些值从字符串转换为属性或参数的实际类型。下面的例子显示了要设置的各种值：
+```<property/>```元素的value属性将属性或构造函数参数指定为人类可读的字符串形式。Spring的[转换服务](http://www.isharefy.com)被用于将这些值从字符串转换为属性或参数的实际类型。下面的例子显示了要设置的各种值：
 
 ```
 <bean id="myDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -941,10 +941,10 @@ public class ExampleBean {
 </bean>
 ```
 
-Spring容器通过使用JavaBeans的PropertyEditor机制将<value/>元素内的文本转换为java.util.Properties实例。这是一个很好的快捷方式，并且是Spring团队支持在value属性样式上使用嵌套<value/>元素的少数几个地方之一。<br/>
+Spring容器通过使用JavaBeans的PropertyEditor机制将```<value/>```元素内的文本转换为java.util.Properties实例。这是一个很好的快捷方式，并且是Spring团队支持在value属性样式上使用嵌套```<value/>```元素的少数几个地方之一。<br/>
 
 *idref元素* <br/>
-idref元素只是一种防错控制的方法，可以将容器中另一个bean的id（字符串值 - 而不是引用）传递给<constructor-arg/>或<property/>元素。以下示例显示了如何使用它：
+idref元素只是一种防错控制的方法，可以将容器中另一个bean的id（字符串值 - 而不是引用）传递给```<constructor-arg/>```或```<property/>```元素。以下示例显示了如何使用它：
 
 ```
 <bean id="theTargetBean" class="..."/>
@@ -973,7 +973,7 @@ idref元素只是一种防错控制的方法，可以将容器中另一个bean�
 升级到4.0架构时，将现有的idref local引用更改为idref bean。
 ```
 
-<idref/>元素带来值的一个常见位置（至少在Spring 2.0之前的版本中）是在ProxyFactoryBean bean定义中的[AOP拦截器](https://docs.spring.io/spring/docs/5.1.0.RELEASE/spring-framework-reference/core.html#aop-pfb-1)的配置中。指定拦截器名称时使用<idref/>元素可以防止对拦截器ID的拼写错误。
+```<idref/>```元素带来值的一个常见位置（至少在Spring 2.0之前的版本中）是在ProxyFactoryBean bean定义中的[AOP拦截器](https://docs.spring.io/spring/docs/5.1.0.RELEASE/spring-framework-reference/core.html#aop-pfb-1)的配置中。指定拦截器名称时使用```<idref/>```元素可以防止对拦截器ID的拼写错误。
 
 
 
