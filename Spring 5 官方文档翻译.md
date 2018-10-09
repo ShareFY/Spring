@@ -310,7 +310,7 @@ IoC容器管理一个或多个Beans,这些Beans是通过您提供给容器的配
 Class
 </td>
 <td>
-实例化Beans
+[实例化Beans](#实例化beans)
 </td>
 </tr>
 <tr>
@@ -318,7 +318,7 @@ Class
 Name
 </td>
 <td>
-命名Beans
+[命名Beans](#命名beans)
 </td>
 </tr>
 <tr>
@@ -334,7 +334,7 @@ Beans范围
 Constructor arguments
 </td>
 <td>
-依赖注入
+[依赖注入](#依赖注入)
 </td>
 </tr>
 <tr>
@@ -342,7 +342,7 @@ Constructor arguments
 Properties
 </td>
 <td>
-依赖注入
+[依赖注入](#依赖注入)
 </td>
 </tr>
 <tr>
@@ -395,7 +395,7 @@ DefaultListableBeanFactory的实现。DefaultListableBeanFactory通过registerSi
 请注意，bean的id唯一性仍然由容器强制执行，但不再由XML解析器强制执行了。<br/>
 
 您不需要为bean指定名称或ID标识，如果没有明确指定名称或id标识，则容器会为该Bean生成一个唯一的名称。但是，如果要通过名称引用该bean，通过使用ref元素或Service
-Locator样式查找，则必须提供名称。不提供名称的动机与使用内部beans和自动装配协作者有关。<br/>
+Locator样式查找，则必须提供名称。不提供名称的动机与使用[内部beans](#内部Beans)和[自动装配协作](http://www.isharefy.com)有关。<br/>
 
     Bean命名约定：
         惯例是在命名bean时使用标准Java约定来实例字段名称。也就是说，bean名称以小写字母开头，并且遵从驼峰命名规则。
@@ -975,16 +975,59 @@ idref元素只是一种防错控制的方法，可以将容器中另一个bean�
 
 ```<idref/>```元素带来值的一个常见位置（至少在Spring 2.0之前的版本中）是在ProxyFactoryBean bean定义中的[AOP拦截器](https://docs.spring.io/spring/docs/5.1.0.RELEASE/spring-framework-reference/core.html#aop-pfb-1)的配置中。指定拦截器名称时使用```<idref/>```元素可以防止对拦截器ID的拼写错误。
 
+**引用其他Beans（合作者）** <br/>
+ref元素是```<constructor-arg />```或```<property />```定义元素中的最后一个元素。在这里，您将bean的指定属性的值设置为对容器管理的另一个bean（协作者）的引用。引用的bean是要设置其属性的bean的依赖项，并且在设置该属性之前根据需要对其进行初始化。（如果协作者是单例bean，它可能已经被容器初始化。）所有的引用最终都是对另一个对象的引用。范围和验证取决于您是否是通过bean，local或parent属性指定其他对象的ID或者名称。<br/>
 
+通过```<ref />```标记的bean属性指定目标bean是最常用的形式，并允许创建对同一容器或父容器中的任何bean的引用，而不管它是否在同一XML文件中。bean属性的值可以与目标bean的id属性相同，或者与目标bean的name属性中的值相同。以下示例显示如何使用ref元素：
 
+	<ref bean="someBean"/>
 
+通过parent属性指定目标bean会创建对当前容器的父容器中的bean的引用。parent属性的值可以与目标bean的id属性或目标bean的name属性中的一个值相同。目标bean必须位于当前bean的父容器中。当您有一个容器层次结构，并且希望使用与父bean同名的代理将现有bean包装在父容器中时，您应该主要使用此bean引用变量。下面两个清单展示了如何使用父属性:
 
+```
+<!-- 在父级对象环境中 -->
+<bean id="accountService" class="com.something.SimpleAccountService">
+    <!-- insert dependencies as required as here -->
+</bean>
+```
 
+```
+<!-- 在子级环境中 -->
+<bean id="accountService" <!-- bean名称与父bean相同 -->
+    class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="target">
+        <ref parent="accountService"/> <!-- 注意我们如何引用父bean -->
+    </property>
+    <!-- insert other configuration and dependencies as required here -->
+</bean>
+```
 
+```
+注意：4.0版本的 beans XSD不再支持ref元素的local属性，因为它不再提供常规bean引用的值。
+升级到4.0架构时，将现有的ref本地引用更改为ref bean。
+```
 
+<a id="内部Beans"></a>
+**内部Beans** <br/>
+```<property />```或```<constructor-arg />```元素中的```<bean />```元素定义了内部bean，如下例所示：
 
+```
+<bean id="outer" class="...">
+    <!-- 只需定义内联目标bean，而不是使用对目标bean的引用 -->
+    <property name="target">
+        <bean class="com.example.Person"> <!-- 这是内部bean -->
+            <property name="name" value="Fiona Apple"/>
+            <property name="age" value="25"/>
+        </bean>
+    </property>
+</bean>
+```
 
+内部bean定义不需要定义的ID或者名称。如果指定ID或者名称，则容器不会使用这样的值作为标识符。容器还会在创建时忽略scope标志，因为内部bean始终是匿名的，并且总是与外部bean一起创建的。不可能独立访问内部bean，也不能将它们注入协作bean(而不同于注入到封闭的bean)。<br/>
 
+作为一种很少出现的情况，从特定的域中有可能会收到销毁回调函数，例如，对于请求域内的内部bean包含单例bean：内部bean实例的创建会绑定到它的包含bean，但销毁回调函数允许它进入到请求域的生命周期中。这不是一个常见的场景；内部bean通常简单的共享它们的包含bean的作用域。<br/>
+
+**集合** <br/>
 
 
 
