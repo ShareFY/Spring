@@ -1028,6 +1028,101 @@ ref元素是```<constructor-arg />```或```<property />```定义元素中的最�
 作为一种很少出现的情况，从特定的域中有可能会收到销毁回调函数，例如，对于请求域内的内部bean包含单例bean：内部bean实例的创建会绑定到它的包含bean，但销毁回调函数允许它进入到请求域的生命周期中。这不是一个常见的场景；内部bean通常简单的共享它们的包含bean的作用域。<br/>
 
 **集合** <br/>
+```<list />```，```<set />```，```<map />```和```<props />```元素分别设置Java集合类型List，Set，Map和Properties的属性和参数。以下示例显示了如何使用它们：
+
+```
+<bean id="moreComplexObject" class="example.ComplexObject">
+    <!-- results in a setAdminEmails(java.util.Properties) call -->
+    <property name="adminEmails">
+        <props>
+            <prop key="administrator">administrator@example.org</prop>
+            <prop key="support">support@example.org</prop>
+            <prop key="development">development@example.org</prop>
+        </props>
+    </property>
+    <!-- results in a setSomeList(java.util.List) call -->
+    <property name="someList">
+        <list>
+            <value>a list element followed by a reference</value>
+            <ref bean="myDataSource" />
+        </list>
+    </property>
+    <!-- results in a setSomeMap(java.util.Map) call -->
+    <property name="someMap">
+        <map>
+            <entry key="an entry" value="just some string"/>
+            <entry key ="a ref" value-ref="myDataSource"/>
+        </map>
+    </property>
+    <!-- results in a setSomeSet(java.util.Set) call -->
+    <property name="someSet">
+        <set>
+            <value>just some string</value>
+            <ref bean="myDataSource" />
+        </set>
+    </property>
+</bean>
+```
+
+map key的值或map value的值，或者set的值也可以是以下任何元素：
+
+```
+bean | ref | idref | list | set | map | props | value | null
+```
+
+*集合合并* <br/>
+Spring容器还支持合并集合。应用程序开发人员可以定义父```<list />```，```<map />```，```<set />```或```<props />```元素，并具有子```<list />```，```<map />```，```<set />```或```<props />```元素 继承和覆盖父集合中的值。也就是说，子集合的值是合并父集合和子集合的元素的结果，子集合的元素覆盖父集合中指定的值。<br/>
+
+关于合并的这一部分讨论了父子bean机制。 不熟悉父类和子bean定义的读者可能希望在继续之前阅读[相关部分](https://docs.spring.io/spring/docs/5.1.0.RELEASE/spring-framework-reference/core.html#beans-child-bean-definitions)。<br/>
+
+以下示例演示了集合合并：
+
+```
+<beans>
+    <bean id="parent" abstract="true" class="example.ComplexObject">
+        <property name="adminEmails">
+            <props>
+                <prop key="administrator">administrator@example.com</prop>
+                <prop key="support">support@example.com</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="child" parent="parent">
+        <property name="adminEmails">
+            <!-- the merge is specified on the child collection definition -->
+            <props merge="true">
+                <prop key="sales">sales@example.com</prop>
+                <prop key="support">support@example.co.uk</prop>
+            </props>
+        </property>
+    </bean>
+<beans>
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
