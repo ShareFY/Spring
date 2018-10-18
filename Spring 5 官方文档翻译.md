@@ -1071,7 +1071,7 @@ bean | ref | idref | list | set | map | props | value | null
 ```
 
 *集合合并* <br/>
-Spring容器还支持合并集合。应用程序开发人员可以定义父```<list />```，```<map />```，```<set />```或```<props />```元素，并具有子```<list />```，```<map />```，```<set />```或```<props />```元素 继承和覆盖父集合中的值。也就是说，子集合的值是合并父集合和子集合的元素的结果，子集合的元素覆盖父集合中指定的值。<br/>
+Spring容器还支持合并集合。应用程序开发人员可以定义父级```<list />```，```<map />```，```<set />```或```<props />```元素，并具有子```<list />```，```<map />```，```<set />```或```<props />```元素 继承和覆盖父集合中的值。也就是说，子集合的值是合并父集合和子集合的元素的结果，子集合的元素覆盖父集合中指定的值。<br/>
 
 关于合并的这一部分讨论了父子bean机制。 不熟悉父类和子bean定义的读者可能希望在继续之前阅读[相关部分](https://docs.spring.io/spring/docs/5.1.0.RELEASE/spring-framework-reference/core.html#beans-child-bean-definitions)。<br/>
 
@@ -1099,52 +1099,190 @@ Spring容器还支持合并集合。应用程序开发人员可以定义父```<l
 <beans>
 ```
 
+请注意在子bean定义的```adminEmails```属性的```<props />```元素上使用的 ```merge=true``` 属性。当容器解析并实例化子bean时，生成的实例有一个```adminEmails```属性集合，其中包含将子项的```adminEmails```集合与父项的```adminEmails```集合合并的结果。以下清单显示了结果：
 
+```
+administrator=administrator@example.com
+sales=sales@example.com
+support=support@example.co.uk
+```
 
+子代```Properties```集合的值集继承父```<props />```的所有属性元素，子代的```support```值覆盖父集合中的值。<br/>
 
+这种合并行为同样适用于```<list />```，```<map />```和```<set />```集合类型。在```<list />```元素的特定情况下，保持与```List```集合类型相关联的语义（即，有序值集合的概念）。父级的值位于所有子级列表的值之前。对于```Map```，```Set```和```Properties```集合类型，不存在排序。因此，对于作为容器内部使用的关联```Map```，```Set```和```Properties```实现类型的基础的集合类型，没有任何排序语义。<br/>
 
+*集合合并的局限性* <br/>
+您无法合并不同的集合类型（例如```Map```和```List```）。如果您尝试这样做，则会抛出相应的异常。必须在较低的继承子类定义上指定merge属性。在父集合定义上指定merge属性是多余的，并且不会导致所需的合并。
 
+*强类型集合* <br/>
+随着Java 5中泛型类型的引入，您可以使用强类型集合。也就是说，可以声明一个```Collection```类型，使其只能包含（例如）```String```元素。如果使用Spring将强类型集合依赖注入到bean中，则可以利用Spring的类型转换支持，以便在添加到```Collection```之前将强类型集合实例的元素转换为适当的类型。以下Java类和bean定义显示了如何执行此操作：
 
+```
+public class SomeClass {
 
+    private Map<String, Float> accounts;
 
+    public void setAccounts(Map<String, Float> accounts) {
+        this.accounts = accounts;
+    }
+}
+```
 
+```
+<beans>
+    <bean id="something" class="x.y.SomeClass">
+        <property name="accounts">
+            <map>
+                <entry key="one" value="9.99"/>
+                <entry key="two" value="2.75"/>
+                <entry key="six" value="3.99"/>
+            </map>
+        </property>
+    </bean>
+</beans>
+```
 
+当```something```bean的```accounts```属性准备好进行注入时，可以通过反射获得有关强类型```Map <String，Float>```的元素类型的泛型信息。因此，Spring的类型转换基础结构将各种值元素识别为```Float```类型，并将字符串值（9.99,2.75和3.99）转换为实际的```Float```类型。<br/>
 
+**Null和空字符串值** <br/>
+Spring将属性等的空参数视为空字符串。以下基于XML的配置元数据片段将```email```属性设置为空字符串值（“”）。<br/>
 
+```
+<bean class="ExampleBean">
+    <property name="email" value=""/>
+</bean>
+```
 
+上面的示例等效于以下Java代码：<br/>
 
+```
+exampleBean.setEmail("");
+```
 
+```<null />```元素处理```null```值。以下清单显示了一个示例：
 
+```
+<bean class="ExampleBean">
+    <property name="email">
+        <null/>
+    </property>
+</bean>
+```
 
+上述配置等同于以下Java代码：
 
+```
+exampleBean.setEmail(null);
+```
 
+<a id="带有p命名空间的XML快捷方式"></a>
+**带有p命名空间的XML快捷方式**
+p命名空间允许您使用bean元素的属性（而不是嵌套的```<property />```元素）来描述属性值协作bean，或者两者都使用。<br/>
 
+Spring支持具有[命名空间](https://docs.spring.io/spring/docs/5.1.0.RELEASE/spring-framework-reference/core.html#xsd-schemas)的可扩展配置格式，这些命名空间基于XML Schema定义。本章中讨论的bean配置格式在XML Schema文档中定义。但是，p命名空间未在XSD文件中定义，仅存在于Spring的核心中。<br/>
 
+以下示例显示了两个XML片段（第一个使用标准XML格式，第二个使用p命名空间），它们解析为相同的结果：
 
+```
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <bean name="classic" class="com.example.ExampleBean">
+        <property name="email" value="someone@somewhere.com"/>
+    </bean>
 
+    <bean name="p-namespace" class="com.example.ExampleBean"
+        p:email="someone@somewhere.com"/>
+</beans>
+```
 
+该示例显示了bean定义中名为email的p命名空间中的属性。这告诉Spring包含一个属性声明。如前所述，p命名空间没有Schema定义，因此您可以将属性的名称设置为属性名。 <br/>
 
+下一个示例包括另外两个bean定义，它们都引用了另一个bean：
 
+```
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <bean name="john-classic" class="com.example.Person">
+        <property name="name" value="John Doe"/>
+        <property name="spouse" ref="jane"/>
+    </bean>
 
+    <bean name="john-modern"
+        class="com.example.Person"
+        p:name="John Doe"
+        p:spouse-ref="jane"/>
 
+    <bean name="jane" class="com.example.Person">
+        <property name="name" value="Jane Doe"/>
+    </bean>
+</beans>
+```
 
+此示例不仅包含使用p命名空间的属性值，还使用特殊格式来声明属性引用。第一个bean定义使用```<property name =“spouse” ref =“jane”/>```来创建从bean john到bean jane的引用，而第二个bean定义使用```p：spouse-ref =“jane”```完成完全相同的事情。在这种情况下，```spouse```是属性名称，而```-ref```部分表示这不是直接值，而是对另一个bean的引用。<br/>
 
+注意：<br/>
+	p命名空间不如标准XML格式灵活。例如，声明属性引用的格式与以Ref结尾的属性冲突，而标准XML格式则不然。我们建议您仔细选择您的方法并将其传达给您的团队成员，以避免生成同时使用所有三种方法的XML文档。<br/>
+	
+**带有c命名空间的XML快捷方式**
+与[带有p命名空间的XML快捷方式](#带有p命名空间的XML快捷方式)类似，Spring 3.1中引入的c命名空间支持使用内联属性来配置构造函数参数，而不是嵌套的```constructor-arg```元素。<br/>
 
+以下示例使用```c：```命名空间来执行与[基于构造函数的依赖注入](#基于构造函数的依赖注入)相同的操作：
 
+```
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:c="http://www.springframework.org/schema/c"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <bean id="thingTwo" class="x.y.ThingTwo"/>
+    <bean id="thingThree" class="x.y.ThingThree"/>
 
+    <!-- 传统声明 -->
+    <bean id="thingOne" class="x.y.ThingOne">
+        <constructor-arg ref="thingTwo"/>
+        <constructor-arg ref="thingThree"/>
+        <constructor-arg value="something@somewhere.com"/>
+    </bean>
 
+    <!-- c命名空间声明 -->
+    <bean id="thingOne" class="x.y.ThingOne" c:thingTwo-ref="thingTwo" c:thingThree-ref="thingThree" c:email="something@somewhere.com"/>
 
+</beans>
+```
 
+```c：```命名空间使用与p：one（bean引用的尾随-ref）相同的约定，用于按名称设置构造函数参数。类似地，它需要声明，即使它没有在XSD schema中定义（它存在于Spring核心内）。<br/>
 
+对于构造函数参数名称不可用的特殊情况（通常如果字节码是在没有调试信息的情况下编译的），您可以使用回退参数索引，如下所示:
 
+```
+<!-- c命名空间索引声明 -->
+<bean id="thingOne" class="x.y.ThingOne" c:_0-ref="thingTwo" c:_1-ref="thingThree"/>
+```
 
+注意：<br/>
+由于XML语法，索引表示法需要在索引前增加```_```，因为XML属性名称不能以数字开头（即使某些IDE允许它）。<br/>
 
+实际上，构造函数解析机制在匹配参数方面非常有效，因此除非您确实需要，否则我们建议在整个配置中使用名称表示法。<br/>
 
+**复合属性名称**
+只要路径中除最终属性名之外的所有组件都不为null，您可以在设置bean属性时使用复合或嵌套属性名称。 考虑以下bean定义：
 
+```
+<bean id="something" class="things.ThingOne">
+    <property name="fred.bob.sammy" value="123" />
+</bean>
+```
 
+这个名为```something```的bean有一个```fred```属性，```fred```有一个```bob```属性，```bob```有一个```sammy```属性，最后的```sammy```属性被设置为123。为了使其正常工作，在构造bean之后，```something```的```fred```属性和```bob```属性不能为null。 否则，抛出```NullPointerException```。<br/>
 
 
 
