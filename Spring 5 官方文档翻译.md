@@ -1176,7 +1176,7 @@ exampleBean.setEmail(null);
 ```
 
 <a id="带有p命名空间的XML快捷方式"></a>
-**带有p命名空间的XML快捷方式**
+**带有p命名空间的XML快捷方式** <br/>
 p命名空间允许您使用bean元素的属性（而不是嵌套的```<property />```元素）来描述属性值协作bean，或者两者都使用。<br/>
 
 Spring支持具有[命名空间](https://docs.spring.io/spring/docs/5.1.0.RELEASE/spring-framework-reference/core.html#xsd-schemas)的可扩展配置格式，这些命名空间基于XML Schema定义。本章中讨论的bean配置格式在XML Schema文档中定义。但是，p命名空间未在XSD文件中定义，仅存在于Spring的核心中。<br/>
@@ -1231,7 +1231,7 @@ Spring支持具有[命名空间](https://docs.spring.io/spring/docs/5.1.0.RELEAS
 注意：<br/>
 	p命名空间不如标准XML格式灵活。例如，声明属性引用的格式与以Ref结尾的属性冲突，而标准XML格式则不然。我们建议您仔细选择您的方法并将其传达给您的团队成员，以避免生成同时使用所有三种方法的XML文档。<br/>
 	
-**带有c命名空间的XML快捷方式**
+**带有c命名空间的XML快捷方式** <br/>
 与[带有p命名空间的XML快捷方式](#带有p命名空间的XML快捷方式)类似，Spring 3.1中引入的c命名空间支持使用内联属性来配置构造函数参数，而不是嵌套的```constructor-arg```元素。<br/>
 
 以下示例使用```c：```命名空间来执行与[基于构造函数的依赖注入](#基于构造函数的依赖注入)相同的操作：
@@ -1273,7 +1273,7 @@ Spring支持具有[命名空间](https://docs.spring.io/spring/docs/5.1.0.RELEAS
 
 实际上，构造函数解析机制在匹配参数方面非常有效，因此除非您确实需要，否则我们建议在整个配置中使用名称表示法。<br/>
 
-**复合属性名称**
+**复合属性名称** <br/>
 只要路径中除最终属性名之外的所有组件都不为null，您可以在设置bean属性时使用复合或嵌套属性名称。 考虑以下bean定义：
 
 ```
