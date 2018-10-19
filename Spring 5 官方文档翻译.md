@@ -17,16 +17,35 @@ Spring框架文档（版本：5.1.0）-- 核心技术
 ---------
 -   [1、IoC容器](#ioc容器)
     -   [1、1 Spring IoC容器和Beans介绍](#spring-ioc容器和beans介绍)
-    -   [1、2 容器概述](#容器概述)
-        -   [1、2、1 配置元数据](#配置元数据)
-        -   [1、2、2 实例化容器](#实例化容器)
-        -   [1、2、3 使用容器](#使用容器)
-    -   [1、3 Bean概述](#beanOverview)
-        -   [1、3、1 命名Beans](#命名beans) 
-        -   [1、3、2 实例化Beans](#实例化beans)
-    -   [1、4 依赖关系](#依赖关系)
-    	 -   [1、4、1 依赖注入](#依赖注入) 
-    	 -   [1、4、2 依赖关系和配置的详细介绍](#依赖关系和配置的详细介绍)  
+    -   [1、2 容器概述](#容器概述)  <br/>
+        -   [1、2、1 配置元数据](#配置元数据)  <br/>
+        -   [1、2、2 实例化容器](#实例化容器)<br/>
+       			  [基于XML方式配置元数据](#基于XML方式配置元数据)<br/>
+       			  [Groovy Bean定义DSL](#Groovy Bean定义DSL) <br/>
+        -   [1、2、3 使用容器](#使用容器)  <br/>
+    -   [1、3 Bean概述](#beanOverview)  <br/>
+        -   [1、3、1 命名Beans](#命名beans)  <br/>
+        -   [1、3、2 实例化Beans](#实例化beans) <br/>
+        			  [使用构造函数实例化](#使用构造函数实例化) <br/>
+        			  [使用静态工厂方法实例化](#使用静态工厂方法实例化)  <br/>
+        			  [使用实例工厂方法实例化](#使用实例工厂方法实例化)  <br/>
+    -   [1、4 依赖关系](#依赖关系)  <br/>
+    	 -   [1、4、1 依赖注入](#依赖注入) <br/>
+    	 			  [基于构造函数的依赖注入](#基于构造函数的依赖注入)  <br/>
+    	 			  [基于Setter的依赖注入](#基于Setter的依赖注入)  <br/>
+    	 			  [依赖性解析过程](#依赖性解析过程)  <br/>
+    	 			  [依赖注入的示例](#依赖注入的示例)  <br/>
+    	 -   [1、4、2 依赖关系和配置的详细介绍](#依赖关系和配置的详细介绍)  <br/>
+    	 			  [直接数值（原始数值、字符串等）](#直接数值)  <br/>
+    	 			  [引用其他Beans（协作者）](#引用其他Beans)  <br/>
+    	 			  [内部Beans](#内部Beans)  <br/>
+    	 			  [集合](#1-4-2-集合)  <br/>
+    	 			  [Null和空字符串值](#Null和空字符串值)  <br/>
+    	 			  [带有p命名空间的XML快捷方式](#带有p命名空间的XML快捷方式)  <br/> 
+    	 			  [带有c命名空间的XML快捷方式](#带有c命名空间的XML快捷方式)  <br/>
+    	 			  [复合属性名称](#复合属性名称)  <br/>
+    	 -    [1、4、3 使用depends-on](#1-4-3-使用depends-on)
+    	 -    [1、4、4 延迟初始化Beans](#1-4-4-延迟初始化Beans)
 
 
 <a id="ioc容器"></a>
@@ -182,6 +201,7 @@ CLASSPATH等）加载配置元数据。
 
 在前面的示例中，服务层由PetStoreServiceImpl类和两个类型为JpaAccountDao和JpaItemDao的数据访问对象组成（基于JPA对象关系映射标准）。属性的name元素代表JavaBean属性的名称，ref元素引用另一个bean定义的名称。id和ref元素之间的这种联系表达了协作对象之间的依赖关系。有关配置对象依赖项的详细信息，请参阅[依赖关系](http://www.isharefy.com/)。<br/>
 
+<a id="基于XML方式配置元数据"></a>
 **编写基于XML方式配置元数据**<br/>
 通过多个XML文件来进行Bean的定义通常较为有用。通常，每个单独的XML配置文件都代表你架构中的一个逻辑层或模块。<br/>
 
@@ -212,6 +232,7 @@ bean定义。
 
 命名空间本身提供了导入指令功能。在Spring提供的XML名称空间(例如context和util命名空间)中，除了普通bean定义之外，还有其他配置特性。<br/>
 
+<a id="Groovy Bean定义DSL"></a>
 **Groovy Bean定义DSL**<br/>
 作为外部化配置元数据的另一个示例，bean定义也可以在Spring的Groovy
 Bean定义DSL中表示，如我们所知道的Grails框架。通常，此类配置位于".groovy"文件中，其结构如下例所示：
@@ -449,6 +470,7 @@ bean定义本质上是用于创建一个或多个对象的。容器在被询问�
     请注意，在名称中使用$字符可以将嵌套类名与外部类名分开。
 
 
+<a id="使用构造函数实例化"></a>
 **使用构造函数实例化** <br/>
 当您通过构造方法创建bean时，所有普通类都可以使用并且与Spring兼容。也就是说，正在开发的类不需要实现任何特定接口或者使用特定的编码方式。简单地指定bean类就足够了。但是，根据您使用特定bean的IoC类型不同，您可能需要一个默认（空）构造函数。<br/>
 
@@ -461,6 +483,7 @@ Spring IoC容器几乎可以管理您想让它管理的任何类。它不仅限�
 
 更多关于为构造函数提供参数的机制（如果需要）以及在构造对象后设置对象实例属性的详细信息，请参阅[依赖注入](http://www.isharefy.com)。 <br/>
 
+<a id="使用静态工厂方法实例化"></a>
 **使用静态工厂方法实例化** <br/>
 定义通过静态工厂方法创建的bean时，您可以使用class属性指定包含静态工厂方法的类，用factory-method属性指定工厂方法本身的名称。您应该能够调用此方法（使用后边描述的可选参数）并返回一个实时对象，随后对这个对象进行处理，就好像这个对象是通过构造函数创建的一样。这种bean定义的一个用途是在遗留代码中调用静态工厂。<br/>
 
@@ -487,6 +510,7 @@ public class ClientService {
 
 更多有关向工厂方法提供(可选的)参数以及在从工厂返回对象后设置对象实例属性的机制的详细信息，请参阅[依赖关系和详细配置](http://www.isharefy.com)。
 
+<a id="使用实例工厂方法实例化"></a>
 **使用实例工厂方法实例化** <br/>
 与通过静态工厂方法实例化类似，使用实例工厂方法进行实例化会从容器调用现有bean的非静态方法来创建新bean。 要使用此机制，请将class属性保留为空，并在factory-bean属性中指定当前（或父级或祖先）容器中bean的名称，该容器包含要调用以创建对象的实例方法。使用factory-method属性设置工厂方法本身的名称。以下示例显示如何配置此类bean：
 
@@ -734,6 +758,7 @@ Setter注入应该只用于可在类中指定合理默认值的可选依赖项�
 例如，如果第三方类没有公开任何setter方法，那么构造函数注入可能是唯一可用的依赖注入形式。
 ```
 
+<a id="依赖性解析过程"></a>
 **依赖性解析过程** <br/>
 容器执行bean依赖性解析如下所示：
 
@@ -765,7 +790,7 @@ Spring容器在创建容器时验证每个bean的配置。然而，直到真正�
 
 如果不存在循环依赖，当一个或多个协作bean被注入依赖bean时，每个协作bean在被注入依赖bean之前完全配置。 这意味着，如果bean A依赖于bean B，则Spring IoC容器在调用bean A上的setter方法之前完全配置bean B.换句话说，bean被实例化（如果它不是预先实例化的单例 ），设置其依赖项，并调用相关的生命周期方法（如[配置的初始化方法](http://www.isharefy.com)或[Bean初始化回调方法](http://www.isharefy.com)）。<br/>
 
-
+<a id="依赖注入的示例"></a>
 **依赖注入的示例** <br/>
 以下示例将基于XML的配置元数据用于基于setter的依赖注入。Spring XML配置文件的一小部分指定了一些bean定义，如下所示：
 
@@ -891,6 +916,7 @@ public class ExampleBean {
 #### 1、4、2 依赖关系和配置的详细介绍
 如[上一节](#依赖注入)所述，您可以将bean属性和构造函数参数定义作为其他被管理的bean（协作者）的引用或者作为内联定义的值。Spring基于XML配置元数据支持在```<property/>```和```<constructor-arg/>```元素中使用子元素类型。
 
+<a id="直接数值"></a>
 **直接数值（原始数值、字符串等）** <br/>
 ```<property/>```元素的value属性将属性或构造函数参数指定为人类可读的字符串形式。Spring的[转换服务](http://www.isharefy.com)被用于将这些值从字符串转换为属性或参数的实际类型。下面的例子显示了要设置的各种值：
 
@@ -975,7 +1001,8 @@ idref元素只是一种防错控制的方法，可以将容器中另一个bean�
 
 ```<idref/>```元素带来值的一个常见位置（至少在Spring 2.0之前的版本中）是在ProxyFactoryBean bean定义中的[AOP拦截器](https://docs.spring.io/spring/docs/5.1.0.RELEASE/spring-framework-reference/core.html#aop-pfb-1)的配置中。指定拦截器名称时使用```<idref/>```元素可以防止对拦截器ID的拼写错误。
 
-**引用其他Beans（合作者）** <br/>
+<a id="引用其他Beans"></a>
+**引用其他Beans（协作者）** <br/>
 ref元素是```<constructor-arg />```或```<property />```定义元素中的最后一个元素。在这里，您将bean的指定属性的值设置为对容器管理的另一个bean（协作者）的引用。引用的bean是要设置其属性的bean的依赖项，并且在设置该属性之前根据需要对其进行初始化。（如果协作者是单例bean，它可能已经被容器初始化。）所有的引用最终都是对另一个对象的引用。范围和验证取决于您是否是通过bean，local或parent属性指定其他对象的ID或者名称。<br/>
 
 通过```<ref />```标记的bean属性指定目标bean是最常用的形式，并允许创建对同一容器或父容器中的任何bean的引用，而不管它是否在同一XML文件中。bean属性的值可以与目标bean的id属性相同，或者与目标bean的name属性中的值相同。以下示例显示如何使用ref元素：
@@ -1027,6 +1054,7 @@ ref元素是```<constructor-arg />```或```<property />```定义元素中的最�
 
 作为一种很少出现的情况，从特定的域中有可能会收到销毁回调函数，例如，对于请求域内的内部bean包含单例bean：内部bean实例的创建会绑定到它的包含bean，但销毁回调函数允许它进入到请求域的生命周期中。这不是一个常见的场景；内部bean通常简单的共享它们的包含bean的作用域。<br/>
 
+<a id="1-4-2-集合"></a>
 **集合** <br/>
 ```<list />```，```<set />```，```<map />```和```<props />```元素分别设置Java集合类型List，Set，Map和Properties的属性和参数。以下示例显示了如何使用它们：
 
@@ -1144,6 +1172,7 @@ public class SomeClass {
 
 当```something```bean的```accounts```属性准备好进行注入时，可以通过反射获得有关强类型```Map <String，Float>```的元素类型的泛型信息。因此，Spring的类型转换基础结构将各种值元素识别为```Float```类型，并将字符串值（9.99,2.75和3.99）转换为实际的```Float```类型。<br/>
 
+<a id="Null和空字符串值"></a>
 **Null和空字符串值** <br/>
 Spring将属性等的空参数视为空字符串。以下基于XML的配置元数据片段将```email```属性设置为空字符串值（“”）。<br/>
 
@@ -1231,6 +1260,7 @@ Spring支持具有[命名空间](https://docs.spring.io/spring/docs/5.1.0.RELEAS
 注意：<br/>
 	p命名空间不如标准XML格式灵活。例如，声明属性引用的格式与以Ref结尾的属性冲突，而标准XML格式则不然。我们建议您仔细选择您的方法并将其传达给您的团队成员，以避免生成同时使用所有三种方法的XML文档。<br/>
 	
+<a id="带有c命名空间的XML快捷方式"></a>	
 **带有c命名空间的XML快捷方式** <br/>
 与[带有p命名空间的XML快捷方式](#带有p命名空间的XML快捷方式)类似，Spring 3.1中引入的c命名空间支持使用内联属性来配置构造函数参数，而不是嵌套的```constructor-arg```元素。<br/>
 
@@ -1273,6 +1303,7 @@ Spring支持具有[命名空间](https://docs.spring.io/spring/docs/5.1.0.RELEAS
 
 实际上，构造函数解析[机制](#构造函数参数解析)在匹配参数方面非常有效，因此除非您确实需要，否则我们建议在整个配置中使用名称表示法。<br/>
 
+<a id="复合属性名称"></a>
 **复合属性名称** <br/>
 只要路径中除最终属性名之外的所有组件都不为null，您可以在设置bean属性时使用复合或嵌套属性名称。 考虑以下bean定义：
 
@@ -1283,6 +1314,70 @@ Spring支持具有[命名空间](https://docs.spring.io/spring/docs/5.1.0.RELEAS
 ```
 
 这个名为```something```的bean有一个```fred```属性，```fred```有一个```bob```属性，```bob```有一个```sammy```属性，最后的```sammy```属性被设置为123。为了使其正常工作，在构造bean之后，```something```的```fred```属性和```bob```属性不能为null。 否则，抛出```NullPointerException```。<br/>
+
+<a id="1-4-3-使用depends-on"></a>
+#### 1、4、3 使用 ```depends-on```
+如果一个bean是另一个bean的依赖项，通常意味着将一个bean设置为另一个bean的属性。通常，您可以使用基于XML的配置元数据中的[```<ref />```](#引用其他Beans)元素来完成此操作。但是，有时bean之间的依赖关系不那么直接。例如，需要触发类中的静态初始化程序，例如数据库驱动程序注册。在初始化使用此元素的bean之前，```depends-on```属性可以显式强制初始化一个或多个bean。以下示例使用```depends-on```属性表示对单个bean的依赖关系：
+
+```
+<bean id="beanOne" class="ExampleBean" depends-on="manager"/>
+<bean id="manager" class="ManagerBean" />
+```
+
+要表示对多个bean的依赖关系，请提供bean名称列表作为```depends-on```属性的值（逗号，空格和分号是有效的分隔符）：
+
+```
+<bean id="beanOne" class="ExampleBean" depends-on="manager,accountDao">
+    <property name="manager" ref="manager" />
+</bean>
+
+<bean id="manager" class="ManagerBean" />
+<bean id="accountDao" class="x.y.jdbc.JdbcAccountDao" />
+```
+
+**注意：**bean定义中的```depends-on```属性既可以指定依赖项的初始化时间，也可以指定相应[单例](http://www.isharefy.com)bean依赖项的销毁时间。在给定的bean本身被销毁之前，首先销毁定义与给定bean的依赖项的从属bean。因此，```depends-on```也可以控制关闭顺序。<br/>
+
+
+<a id="1-4-4-延迟初始化Beans"></a>
+#### 1、4、4 懒加载（延迟初始化Beans）
+默认情况下，```ApplicationContext```的实现会立刻创建和配置所有[单例](http://www.isharefy.com)beans，作为其初始化过程的一部分。通常，这种预先实例化方式是可取的，因为配置或周围环境中的错误是立即发现的，而不是几小时甚至几天后。如果不希望出现这种情况，可以通过将bean定义标记为延迟初始化来阻止单例bean的预实例化。延迟初始化的bean告诉IoC容器在第一次请求时创建bean实例，而不是在启动时创建。<br/>
+
+在XML中，此行为由```<bean />```元素上的```lazy-init```属性控制，如以下示例所示：
+
+```
+<bean id="lazy" class="com.something.ExpensiveToCreateBean" lazy-init="true"/>
+<bean name="not.lazy" class="com.something.AnotherBean"/>
+```
+
+当```ApplicationContext```使用前面的配置时，在```ApplicationContext```启动时，不会急切地预先实例化延迟加载的bean，而是急切地预先实例化```not.lazy``` bean。<br/>
+
+但是，当延迟初始化的bean是非延迟初始化的单例bean的依赖项时，```ApplicationContext```会在启动时创建延迟初始化的bean，因为它必须满足单例的依赖关系。惰性初始化的bean被注入到其他没有惰性初始化的单例bean中。<br/>
+
+您还可以使用```<beans />```元素上的```default-lazy-init```属性在容器级别控制延迟初始化，请看以下示例：
+
+```
+<beans default-lazy-init="true">
+    <!-- no beans will be pre-instantiated... -->
+</beans>
+```
+
+#### 1、4、5 自动装配协作者
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
